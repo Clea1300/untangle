@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Untangle — make sense of any bill, letter, or notice</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">⤬</span>
+      <span class="brand-name">Untangle</span>
+    </div>
+    <button id="settingsBtn" class="icon-btn" title="API key settings" aria-label="Settings">⚙</button>
+  </header>
+
+  <main class="page">
+    <section class="intro">
+      <h1>Paste a confusing bill, letter, or notice. Get a plain-English read on it.</h1>
+      <p class="sub">Medical bills, insurance denials, collection notices, subscription charges, government letters — Untangle explains what it says, flags anything that looks wrong, and drafts a response you can send.</p>
+    </section>
+
+    <section class="card input-card">
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tab="text" role="tab" aria-selected="true">Paste text</button>
+        <button class="tab" data-tab="image" role="tab" aria-selected="false">Upload a photo</button>
+      </div>
+
+      <div class="tab-panel" id="panel-text">
+        <textarea id="docText" placeholder="Paste the full text of the bill, letter, or notice here…" rows="10"></textarea>
+      </div>
+
+      <div class="tab-panel hidden" id="panel-image">
+        <label class="dropzone" id="dropzone" for="docImage">
+          <input type="file" id="docImage" accept="image/png,image/jpeg,image/webp,image/gif" hidden />
+          <span id="dropzoneText">Click to choose a photo of the document (PNG, JPEG, WEBP, or GIF)</span>
+          <img id="imagePreview" class="hidden" alt="Selected document preview" />
+        </label>
+      </div>
+
+      <div class="notes-row">
+        <label for="notes">Anything else worth knowing? <span class="optional">(optional)</span></label>
+        <input type="text" id="notes" placeholder="e.g. I already paid this in March, or I'm on a fixed income…" />
+      </div>
+
+      <div class="action-row">
+        <button id="analyzeBtn" class="primary-btn">Untangle this</button>
+        <span id="statusText" class="status-text"></span>
+      </div>
+    </section>
+
+    <section class="card results hidden" id="results">
+      <div class="result-block">
+        <h2>What this is</h2>
+        <p class="doc-type" id="docType"></p>
+        <p id="summary"></p>
+      </div>
+
+      <div class="result-block">
+        <h2>Red flags</h2>
+        <ul id="redFlags" class="red-flags"></ul>
+      </div>
+
+      <div class="result-block">
+        <h2>Suggested next steps</h2>
+        <ul id="nextSteps" class="next-steps"></ul>
+      </div>
+
+      <div class="result-block">
+        <h2>Draft response</h2>
+        <p class="hint">Review it, fill in any [BRACKETED] details, and edit anything before sending.</p>
+        <textarea id="draftResponse" rows="14"></textarea>
+        <button id="copyBtn" class="secondary-btn">Copy to clipboard</button>
+        <span id="copyStatus" class="status-text"></span>
+      </div>
+    </section>
+
+    <p class="disclaimer">
+      Untangle is not a substitute for legal, medical, or financial advice. Always verify dates, amounts, and account details yourself before sending anything. Your document and API key are sent directly from your browser to Anthropic's API — nothing passes through any server of ours.
+    </p>
+  </main>
+
+  <div class="modal-backdrop hidden" id="settingsBackdrop">
+    <div class="modal">
+      <h2>Anthropic API key</h2>
+      <p>Untangle calls the Claude API directly from your browser. Your key is stored only in this browser's local storage — it is never sent anywhere except <code>api.anthropic.com</code>.</p>
+      <input type="password" id="apiKeyInput" placeholder="sk-ant-…" autocomplete="off" />
+      <p class="hint">Don't have one? Create it on the <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">Anthropic Console</a>.</p>
+      <div class="modal-actions">
+        <button id="saveKeyBtn" class="primary-btn">Save</button>
+        <button id="closeModalBtn" class="secondary-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
