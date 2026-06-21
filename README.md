@@ -1,6 +1,6 @@
 # Untangle
 
-Paste (or photograph) any confusing bill, letter, or official notice — medical bills, insurance EOBs, collection notices, subscription disputes, government benefit letters — and get back:
+Paste, photograph, or upload a PDF of any confusing bill, letter, or official notice — medical bills, insurance EOBs, collection notices, subscription disputes, government benefit letters — and get back:
 
 1. A plain-language explanation of what it is and what it wants from you.
 2. Red flags: billing errors, denials without reasons, suspicious deadlines, scam indicators.
@@ -22,6 +22,7 @@ Then open `http://localhost:8000`.
 ## How it works
 
 - It's a single page (`index.html` + `style.css` + `app.js`), no framework, no build tool.
+- Accepts pasted text, or an uploaded/dragged-and-dropped photo (PNG, JPEG, WEBP, GIF) or PDF of the document.
 - Click the gear icon and paste an Anthropic API key (get one at [console.anthropic.com](https://console.anthropic.com/settings/keys)). The key is stored only in your browser's `localStorage` and is sent directly from your browser to `api.anthropic.com` — it never touches any server of ours.
 - Calls `claude-opus-4-8` with extended thinking and a forced structured-output tool call, so the response always comes back as a typed `{ document_type, summary, red_flags, draft_response, suggested_next_steps }` object.
 

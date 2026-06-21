@@ -24,18 +24,23 @@
     <section class="card input-card">
       <div class="tabs" role="tablist">
         <button class="tab active" data-tab="text" role="tab" aria-selected="true">Paste text</button>
-        <button class="tab" data-tab="image" role="tab" aria-selected="false">Upload a photo</button>
+        <button class="tab" data-tab="file" role="tab" aria-selected="false">Upload a file</button>
       </div>
 
       <div class="tab-panel" id="panel-text">
         <textarea id="docText" placeholder="Paste the full text of the bill, letter, or notice here…" rows="10"></textarea>
       </div>
 
-      <div class="tab-panel hidden" id="panel-image">
-        <label class="dropzone" id="dropzone" for="docImage">
-          <input type="file" id="docImage" accept="image/png,image/jpeg,image/webp,image/gif" hidden />
-          <span id="dropzoneText">Click to choose a photo of the document (PNG, JPEG, WEBP, or GIF)</span>
+      <div class="tab-panel hidden" id="panel-file">
+        <label class="dropzone" id="dropzone" for="docFile">
+          <input type="file" id="docFile" accept="image/png,image/jpeg,image/webp,image/gif,application/pdf" hidden />
+          <span id="dropzoneText">Click or drag a photo or PDF of the document here (PNG, JPEG, WEBP, GIF, or PDF)</span>
           <img id="imagePreview" class="hidden" alt="Selected document preview" />
+          <div id="filePreview" class="file-preview hidden">
+            <span class="file-icon" aria-hidden="true">📄</span>
+            <span id="fileName"></span>
+            <button type="button" id="removeFileBtn" class="icon-btn file-remove-btn" title="Remove file" aria-label="Remove file">✕</button>
+          </div>
         </label>
       </div>
 
@@ -51,6 +56,10 @@
     </section>
 
     <section class="card results hidden" id="results">
+      <div class="results-header">
+        <button id="resetBtn" class="secondary-btn">Analyze another document</button>
+      </div>
+
       <div class="result-block">
         <h2>What this is</h2>
         <p class="doc-type" id="docType"></p>

@@ -54,15 +54,18 @@ const ANALYSIS_TOOL = {
 const el = (id) => document.getElementById(id);
 
 const docTextEl = el("docText");
-const docImageEl = el("docImage");
+const docFileEl = el("docFile");
+const dropzoneEl = el("dropzone");
 const imagePreviewEl = el("imagePreview");
+const filePreviewEl = el("filePreview");
+const fileNameEl = el("fileName");
 const dropzoneTextEl = el("dropzoneText");
 const notesEl = el("notes");
 const analyzeBtn = el("analyzeBtn");
 const statusText = el("statusText");
 const resultsEl = el("results");
 
-let selectedImage = null; // { base64, mediaType }
+let selectedFile = null; // { base64, mediaType, isPdf, name }
 
 // Tabs
 document.querySelectorAll(".tab").forEach((tab) => {
@@ -78,20 +81,61 @@ document.querySelectorAll(".tab").forEach((tab) => {
   });
 });
 
-// Image upload
-docImageEl.addEventListener("change", () => {
-  const file = docImageEl.files[0];
+// File upload (image or PDF), via click or drag-and-drop
+function clearFile() {
+  selectedFile = null;
+  docFileEl.value = "";
+  imagePreviewEl.classList.add("hidden");
+  imagePreviewEl.src = "";
+  filePreviewEl.classList.add("hidden");
+  dropzoneTextEl.classList.remove("hidden");
+}
+
+function handleFile(file) {
   if (!file) return;
+  const isPdf = file.type === "application/pdf";
   const reader = new FileReader();
   reader.onload = () => {
     const dataUrl = reader.result;
     const base64 = dataUrl.split(",")[1];
-    selectedImage = { base64, mediaType: file.type };
-    imagePreviewEl.src = dataUrl;
-    imagePreviewEl.classList.remove("hidden");
+    selectedFile = { base64, mediaType: file.type, isPdf, name: file.name };
     dropzoneTextEl.classList.add("hidden");
+    if (isPdf) {
+      imagePreviewEl.classList.add("hidden");
+      fileNameEl.textContent = file.name;
+      filePreviewEl.classList.remove("hidden");
+    } else {
+      imagePreviewEl.src = dataUrl;
+      imagePreviewEl.classList.remove("hidden");
+      filePreviewEl.classList.add("hidden");
+    }
   };
   reader.readAsDataURL(file);
+}
+
+docFileEl.addEventListener("change", () => handleFile(docFileEl.files[0]));
+
+el("removeFileBtn").addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  clearFile();
+});
+
+["dragenter", "dragover"].forEach((evt) =>
+  dropzoneEl.addEventListener(evt, (e) => {
+    e.preventDefault();
+    dropzoneEl.classList.add("dragover");
+  })
+);
+["dragleave", "drop"].forEach((evt) =>
+  dropzoneEl.addEventListener(evt, (e) => {
+    e.preventDefault();
+    dropzoneEl.classList.remove("dragover");
+  })
+);
+dropzoneEl.addEventListener("drop", (e) => {
+  const file = e.dataTransfer.files[0];
+  if (file) handleFile(file);
 });
 
 // Settings modal
@@ -157,16 +201,16 @@ async function analyze() {
   }
 
   const text = docTextEl.value.trim();
-  if (!text && !selectedImage) {
-    setStatus("Paste some text or upload a photo first.", true);
+  if (!text && !selectedFile) {
+    setStatus("Paste some text or upload a photo or PDF first.", true);
     return;
   }
 
   const content = [];
-  if (selectedImage) {
+  if (selectedFile) {
     content.push({
-      type: "image",
-      source: { type: "base64", media_type: selectedImage.mediaType, data: selectedImage.base64 },
+      type: selectedFile.isPdf ? "document" : "image",
+      source: { type: "base64", media_type: selectedFile.mediaType, data: selectedFile.base64 },
     });
   }
   let instruction = "Analyze this document.";
@@ -276,4 +320,13 @@ el("copyBtn").addEventListener("click", async () => {
   } catch {
     el("copyStatus").textContent = "Couldn't copy — select and copy manually.";
   }
+});
+
+el("resetBtn").addEventListener("click", () => {
+  docTextEl.value = "";
+  notesEl.value = "";
+  clearFile();
+  resultsEl.classList.add("hidden");
+  setStatus("");
+  document.querySelector(".input-card").scrollIntoView({ behavior: "smooth", block: "start" });
 });
